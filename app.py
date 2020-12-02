@@ -4,6 +4,8 @@ from models import db, connect_db, UserInformation, RecentSongs, LikedSongs
 from create_user_form import create_user
 from forms import UserForm, LoginForm
 
+import requests
+
 
 if __name__ == "__main__":
     app.run(debug=True)
@@ -64,3 +66,10 @@ def login():
 def logout():
     session.clear()
     return redirect("/")
+
+
+@app.route("/music")
+def authorized_for_spotify():
+    code = request.args.get("code")
+    print(code)
+    return render_template("musicPage.html")
