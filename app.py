@@ -1,4 +1,4 @@
-from flask import Flask, request, session, redirect, render_template, flash
+from flask import Flask, request, session, redirect, render_template, flash, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, UserInformation, RecentSongs, LikedSongs
 from create_user_form import create_user
@@ -68,12 +68,9 @@ def logout():
     return redirect("/")
 
 
-# @app.route("/music/<auth_code>", methods=["GET", "POST"])
-# def authorized_for_spotify():
-#     auth_code = auth_code
-#     code = request.args.get("code")
-#     print(code)
-#     return render_template("musicPage.html")
+@app.route("/music/<auth_code>")
+def music_page(auth_code):
+    return render_template("musicPage.html", auth_code=auth_code)
 
 
 @app.route("/authorize", methods=["GET", "POST"])
@@ -94,4 +91,5 @@ def authorize():
             "https://accounts.spotify.com/api/token", headers=headers, data=data
         )
         auth_code = response.json()["access_token"]
-        return render_template("musicPage.html", auth_code=auth_code)
+        if auth_code:
+            return redirect(url_for("music_page", auth_code=auth_code))

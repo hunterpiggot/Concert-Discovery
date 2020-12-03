@@ -12,13 +12,28 @@ const nextSong = document.getElementById("next-track")
 const authCode = document.getElementById("auth-code").innerText
 
 
-
-
-
-
 volumeSlider.oninput = function() {
   volumeDisplay.innerHTML = this.value
 }
+
+function removeSpaces (word) {
+  return word.toString().replace(/\s/g,"%20")
+}
+
+// Check Stub Hub api to see all concerts from the artist
+const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerName='
+
+function stubhubApiRequest (artist) {
+  let url = stubhubURL + removeSpaces(artist)
+  fetch(url, {
+  headers: {
+    Accept: "application/json",
+    Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
+  }
+}).then(response => response.json()).then(data => console.log(data))
+}
+
+
 
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = authCode;
@@ -76,6 +91,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       currentTrack.innerText = current_track["name"]
       currentAlbumCover.src = current_track["album"]["images"][0]["url"]
       currentArtist.innerText = "By: " + current_track["artists"][0]["name"]
+      stubhubApiRequest(current_track["artists"][0]["name"])
       console.log('Currently Playing', current_track);
       console.log('Position in Song', position);
       console.log('Duration of Song', duration);
