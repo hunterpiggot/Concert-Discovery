@@ -68,8 +68,30 @@ def logout():
     return redirect("/")
 
 
-@app.route("/music")
-def authorized_for_spotify():
+# @app.route("/music/<auth_code>", methods=["GET", "POST"])
+# def authorized_for_spotify():
+#     auth_code = auth_code
+#     code = request.args.get("code")
+#     print(code)
+#     return render_template("musicPage.html")
+
+
+@app.route("/authorize", methods=["GET", "POST"])
+def authorize():
     code = request.args.get("code")
-    print(code)
-    return render_template("musicPage.html")
+    if request.method == "GET":
+        headers = {
+            "Authorization": "Basic ODlmZmQ1MTQ1NWZhNDExM2IxYzNhYjU4NDk2YzA5NzA6MmI1ZDYzYmY4YjhiNDVkN2JmN2Y1OTk4OGIzYTlkMWI=",
+        }
+
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": "http://127.0.0.1:5000/authorize",
+        }
+
+        response = requests.post(
+            "https://accounts.spotify.com/api/token", headers=headers, data=data
+        )
+        auth_code = response.json()["access_token"]
+        return render_template("musicPage.html", auth_code=auth_code)

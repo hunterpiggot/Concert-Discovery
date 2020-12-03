@@ -9,7 +9,7 @@ const currentArtist = document.getElementById("current-artist")
 const lastSong = document.getElementById("previous-track")
 const nextSong = document.getElementById("next-track")
 
-
+const authCode = document.getElementById("auth-code").innerText
 
 
 
@@ -21,7 +21,8 @@ volumeSlider.oninput = function() {
 }
 
 window.onSpotifyWebPlaybackSDKReady = () => {
-    const token = 'BQBTJk4WKg-9Of5RJDvlixHrSpmD0kTXsKgA0gwqPRD9Af5fRviI6neP-jLxaIs8UIQj_iRAdMgqrxgZxl7k05ojR_3Bpcv57p4fXQ4zrNir326O318FL83Zo2CccVoH1hOed9WI9KLIBSigA8a0ygRmfdKRrKoA5dI0ig';
+    const token = authCode;
+    console.log(authCode)
     const player = new Spotify.Player({
       name: 'Concert Discovery',
       getOAuthToken: cb => { cb(token); },
