@@ -81,7 +81,6 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 		dist = dist * 60 * 1.1515;
 		if (unit=="K") { dist = dist * 1.609344 }
     if (unit=="N") { dist = dist * 0.8684 }
-    // console.log("A CONCERT")
     if (dist < searchRadius) {
       // MAKE THIS LOOK BETTER THAN AN ALERT
       alert("There is a concert in your area")
@@ -95,7 +94,6 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = authCode;
-    console.log(authCode)
     const player = new Spotify.Player({
       name: 'Concert Discovery',
       getOAuthToken: cb => { cb(token); },
@@ -112,32 +110,32 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   
     // Ready
     player.addListener('ready', ({ device_id }) => {
-      console.log('Ready with Device ID', device_id);
+      // console.log('Ready with Device ID', device_id);
     });
   
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
-      console.log('Device ID has gone offline', device_id);
+      // console.log('Device ID has gone offline', device_id);
     });
 
     player.setVolume(0.5).then(() => {
-      console.log('Volume updated!');
+      // console.log('Volume updated!');
     });
 
     player.getVolume().then(volume => {
       let volume_percentage = volume * 100;
-      console.log(`The volume of the player is ${volume_percentage}%`);
+      // console.log(`The volume of the player is ${volume_percentage}%`);
     });
     
     playButton.addEventListener("click", function(){
       player.togglePlay().then(() => {
-        console.log('Toggled playback!');
+        // console.log('Toggled playback!');
       });
     })
 
     volumeSlider.addEventListener("mousemove", function() {
       player.setVolume(this.value/100).then(() => {
-        console.log('Volume updated!');
+        // console.log('Volume updated!');
       });
     })
 
@@ -151,20 +149,20 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       currentArtist.innerText = "By: " + current_track["artists"][0]["name"]
       songId.innerText = current_track["id"]
       stubhubApiRequest(current_track["artists"][0]["name"])
-      console.log('Currently Playing', current_track);
-      console.log('Position in Song', position);
-      console.log('Duration of Song', duration);
+      // console.log('Currently Playing', current_track);
+      // console.log('Position in Song', position);
+      // console.log('Duration of Song', duration);
     });
 
     lastSong.addEventListener("click", function () {
       player.previousTrack().then(() => {
-        console.log('Set to previous track!');
+        // console.log('Set to previous track!');
       });
     })
 
     nextSong.addEventListener("click", function () {
       player.nextTrack().then(() => {
-        console.log('Skipped to next track!');
+        // console.log('Skipped to next track!');
       });
     })
 

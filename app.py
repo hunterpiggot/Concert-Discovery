@@ -168,3 +168,27 @@ def like_song():
         response = requests.put(
             "https://api.spotify.com/v1/me/tracks", headers=headers, params=params
         )
+
+
+@app.route("/likedSongs")
+def users_liked_songs():
+    user = LikedSongs.query.filter_by(email=session["email"]).all()
+    user_and_concert = []
+    for song in user:
+        headers = {
+            "Authorization": "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg",
+            "Accept": "application/json",
+        }
+        params = (("performerName", song.artist_name),)
+        response = requests.get(
+            "https://api.stubhub.com/sellers/search/events/v3",
+            headers=headers,
+            params=params,
+        )
+        if response.json()["numFound"] > 0:
+            user_and_concert.append([song, response.json()["events"][0]["name"]])
+        else:
+            user_and_concert.append(
+                [song, "There is no upcoming concerts for the artist"]
+            )
+    return render_template("users_liked_songs.html", user_and_concert=user_and_concert)
