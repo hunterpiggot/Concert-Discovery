@@ -152,3 +152,19 @@ def like_song():
         )
         db.session.add(song)
         db.session.commit()
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer BQDNgbr61-zxUxVfrSzb413Wge3uBUQPDxrYa2aKKW3IfG88yujhg_xefOfC0CtV3dZZnUhd4p1_bCcO5wUGwLpjBav8FG5rTtjJFaVLHupXbebnhoCt25BL5ASleG5o5yZwgC5keen2oK04LXmpAdGbrOQbO3JV46_xBZNwO8SI1w",
+        }
+
+        params = (
+            (
+                "ids",
+                data["songId"],
+            ),
+        )
+
+        response = requests.put(
+            "https://api.spotify.com/v1/me/tracks", headers=headers, params=params
+        )

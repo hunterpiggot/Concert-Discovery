@@ -17,7 +17,7 @@ const searchRadius = document.getElementById("serachRadius").innerText
 
 const likeBtn = document.getElementById("likeSong")
 const dislikeBtn = document.getElementById("dislikeSong")
-
+const songId = document.getElementById("song-id")
 
 
 likeBtn.addEventListener("click", function () {
@@ -29,7 +29,8 @@ likeBtn.addEventListener("click", function () {
     body: JSON.stringify({
       song: currentTrack.innerText,
       artist: currentArtist.innerText.substring(4),
-      show: true
+      show: true,
+      songId: songId.innerText
     })
   }).then(results => results.json())
 })
@@ -148,6 +149,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       currentTrack.innerText = current_track["name"]
       currentAlbumCover.src = current_track["album"]["images"][0]["url"]
       currentArtist.innerText = "By: " + current_track["artists"][0]["name"]
+      songId.innerText = current_track["id"]
       stubhubApiRequest(current_track["artists"][0]["name"])
       console.log('Currently Playing', current_track);
       console.log('Position in Song', position);
