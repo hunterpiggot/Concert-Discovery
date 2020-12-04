@@ -6,11 +6,19 @@
 <p>Volume: <span  id="volume-display"></span></p>
 
 <p hidden id="auth-code">{{auth_code}}</p>
+<p hidded id="latitude">{{lat}}</p>
+<p hidded id="longitude">{{lng}}</p>
+<p hidded id="serachRadius">{{serachRadius}}</p>
+
+
+
 <img id="album-cover" src="" alt="">
 <button class="btn btn-success" id="playButton">Pause/Play</button>
 <button class="btn btn-success" id="previous-track"><</button>
 <button class="btn btn-success" id="next-track">></button>
 
+<button class="btn btn-success" id="likeSong">like</button>
+<button class="btn btn-success" id="dislikeSong">dislike</button>
 
 <input type="range" min="1" max="100" value="50" class="custom-range" id="volume-slider">
 
@@ -21,4 +29,4 @@
 
 
 
-  {% endblock %}
+{% endblock %}

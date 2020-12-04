@@ -7,15 +7,15 @@ from forms import UserForm, LoginForm
 import requests
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 app = Flask(__name__)
 app.debug = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///concertdiscovery"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "12345"
 toolbar = DebugToolbarExtension(app)
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)
+
 
 connect_db(app)
 
@@ -34,16 +34,43 @@ def register():
     form = UserForm()
     if form.validate_on_submit():
         new_user = create_user(form)
+        email = new_user.email
         db.session.add(new_user)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            form.email.errors.append("Email is taken, please provide another")
-            return render_template("register.html", form=form)
+        db.session.commit()
+        # try:
+        #     db.session.commit()
+        # except IntegrityError:
+        #     form.email.errors.append("Email is taken, please provide another")
+        #     return render_template("register.html", form=form)
         session["email"] = new_user.email
-        flash("Thank you for joining!")
-        return redirect("/")
+        # flash("Thank you for joining!")
+        return redirect(url_for("get_lat_long", email=email))
     return render_template("register.html", form=form)
+
+
+def remove_space(city):
+    return city.replace(" ", "%20")
+
+
+@app.route("/get_lat_long/<email>")
+def get_lat_long(email):
+    user = UserInformation.query.filter_by(email=email).first()
+    city = user.city
+    state = user.state
+    url = (
+        "http://open.mapquestapi.com/geocoding/v1/address?key=TjM9QJlI2AYMCCkqtzSTVmVW73ZzYwaL&location="
+        + remove_space(city)
+        + ","
+        + state
+    )
+    response = requests.get(url)
+    lat = response.json()["results"][0]["locations"][0]["latLng"]["lat"]
+    lng = response.json()["results"][0]["locations"][0]["latLng"]["lng"]
+    user.latitude = lat
+    user.longitude = lng
+    db.session.add(user)
+    db.session.commit()
+    return redirect("/")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -70,7 +97,17 @@ def logout():
 
 @app.route("/music/<auth_code>")
 def music_page(auth_code):
-    return render_template("musicPage.html", auth_code=auth_code)
+    user = UserInformation.query.filter_by(email=session["email"]).first()
+    lat = user.latitude
+    lng = user.longitude
+    searchRadius = user.search_radius
+    return render_template(
+        "musicPage.html",
+        auth_code=auth_code,
+        lat=lat,
+        lng=lng,
+        searchRadius=searchRadius,
+    )
 
 
 @app.route("/authorize", methods=["GET", "POST"])
@@ -93,3 +130,25 @@ def authorize():
         auth_code = response.json()["access_token"]
         if auth_code:
             return redirect(url_for("music_page", auth_code=auth_code))
+
+
+@app.route("/likeSong", methods=["GET", "POST"])
+def like_song():
+    data = request.json
+    user = LikedSongs.query.filter_by(email=session["email"]).all()
+
+    duplicate = False
+    for song in user:
+        if data["song"] == song.song_name and data["artist"] == song.artist_name:
+            duplicate = True
+
+    if not duplicate:
+        song = LikedSongs(
+            email=session["email"],
+            song_name=data["song"],
+            artist_name=data["artist"],
+            liked=True,
+            shown_concert=False,
+        )
+        db.session.add(song)
+        db.session.commit()

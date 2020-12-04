@@ -11,6 +11,29 @@ const nextSong = document.getElementById("next-track")
 
 const authCode = document.getElementById("auth-code").innerText
 
+const lat = document.getElementById('latitude').innerText
+const lng = document.getElementById('longitude').innerText
+const searchRadius = document.getElementById("serachRadius").innerText
+
+const likeBtn = document.getElementById("likeSong")
+const dislikeBtn = document.getElementById("dislikeSong")
+
+
+
+likeBtn.addEventListener("click", function () {
+  fetch('/likeSong', {
+    method :"POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      song: currentTrack.innerText,
+      artist: currentArtist.innerText.substring(4),
+      show: true
+    })
+  }).then(results => results.json())
+})
+
 
 volumeSlider.oninput = function() {
   volumeDisplay.innerHTML = this.value
@@ -30,8 +53,42 @@ function stubhubApiRequest (artist) {
     Accept: "application/json",
     Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
   }
-}).then(response => response.json()).then(data => console.log(data))
+  // ADD MAPING FUNCTION
+}).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
 }
+
+
+
+// get location coords of user
+
+// Calculate distance from Location
+function distance(lat1, lon1, lat2, lon2, unit) {
+	if ((lat1 == lat2) && (lon1 == lon2)) {
+		return 0;
+	}
+	else {
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var theta = lon1-lon2;
+		var radtheta = Math.PI * theta/180;
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		if (dist > 1) {
+			dist = 1;
+		}
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit=="K") { dist = dist * 1.609344 }
+    if (unit=="N") { dist = dist * 0.8684 }
+    // console.log("A CONCERT")
+    if (dist < searchRadius) {
+      // MAKE THIS LOOK BETTER THAN AN ALERT
+      alert("There is a concert in your area")
+    }
+		return dist;
+	}
+}
+
 
 
 

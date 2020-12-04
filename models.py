@@ -25,6 +25,8 @@ class UserInformation(db.Model):
     city = db.Column(db.Text)
     state = db.Column(db.Text)
     search_radius = db.Column(db.Integer, default=100)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
     ######## relationships ########
     recent = db.relationship(
         "RecentSongs", cascade="all,delete", backref="users", passive_deletes=True
