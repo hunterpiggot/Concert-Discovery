@@ -1,7 +1,7 @@
 {% extends 'index.html'  %}
 {% block content %}
 <h1 id="current-track"></h1>
-<p id="current-artist"></p>
+<p id="current-artist" onchange="checkArtistAndConcert()"></p>
 
 <p>Volume: <span  id="volume-display"></span></p>
 
@@ -10,7 +10,44 @@
 <p hidden id="longitude">{{lng}}</p>
 <p hidden id="serachRadius">{{serachRadius}}</p>
 
-<p hidded id="song-id"></p>
+<p hidden id="song-id"></p>
+
+<!-- <div class="wrapper"> -->
+    <div hidden class="button" id="concert-notification" onclick="document.body.classList.add('active')">
+        <span class="button-text">Press</span>
+        <div class="button-backgrounds">
+            <div class="button-circle button-circle1"></div>
+            <div class="button-circle button-circle2"></div>
+            <div class="button-circle button-circle3"></div>
+            <div class="button-circle button-circle4"></div>
+        </div>
+    </div>
+<!-- </div> -->
+
+<div class="wrapper">
+    <div class="popup">
+        <div class="popup-inside">
+            <div class="backgrounds">
+                <div class="background"></div>
+                <div class="background background2"></div>
+                <div class="background background3"></div>
+                <div class="background background4"></div>
+                <div class="background background5"></div>
+                <div class="background background6"></div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="content-wrapper">
+                <h1 id="artist-notification"></h1>
+                <p>Want to buy tickets?</p>
+                <p>LINK</p>
+                <p class="try-again" onclick="document.body.classList.remove('active')">Dismiss</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <img id="album-cover" src="" alt="">
 <button class="btn btn-success" id="playButton">Pause/Play</button>

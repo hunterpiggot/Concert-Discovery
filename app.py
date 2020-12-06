@@ -1,4 +1,14 @@
-from flask import Flask, request, session, redirect, render_template, flash, url_for
+from flask import (
+    Flask,
+    request,
+    session,
+    redirect,
+    render_template,
+    flash,
+    url_for,
+    Response,
+    jsonify,
+)
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, UserInformation, RecentSongs, LikedSongs
 from create_user_form import create_user
@@ -168,6 +178,10 @@ def like_song():
         response = requests.put(
             "https://api.spotify.com/v1/me/tracks", headers=headers, params=params
         )
+        data = {"success": True}
+        return data
+    data = {"success": False}
+    return data
 
 
 @app.route("/likedSongs")
@@ -192,3 +206,29 @@ def users_liked_songs():
                 [song, "There is no upcoming concerts for the artist"]
             )
     return render_template("users_liked_songs.html", user_and_concert=user_and_concert)
+
+
+@app.route("/checkLikedSongs", methods=["GET"])
+def check_liked_songs():
+    data = request.args
+    user = LikedSongs.query.filter_by(email=session["email"]).all()
+    # user = LikedSongs.query.filter_by(song_name="Juice").all()
+    print(data["songName"].lower())
+    # print(user[0].lower())
+    print(data["songName"].lower() == user[0].lower())
+    for song in user:
+        if (
+            data["songName"].lower() == song.song_name.lower()
+            and data["artist"].lower() == song.artist_name.lower()
+            and song.liked == True
+        ):
+            print("______________")
+            print("______________")
+            print("HERE")
+            print("______________")
+            print("______________")
+            data = {"liked": False}
+            return data
+            # res = {"Test": "testing"}
+            # return res
+    return {"liked": True}

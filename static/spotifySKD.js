@@ -19,20 +19,55 @@ const likeBtn = document.getElementById("likeSong")
 const dislikeBtn = document.getElementById("dislikeSong")
 const songId = document.getElementById("song-id")
 
+const notification = document.getElementById("concert-notification")
+const artistNotification = document.getElementById("artist-notification")
+
+
+const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerName='
+
+// when artist changes, check if the user has like them and the concert has not been show, if true, check if the artist has a concert coming up, if they do, show them the concert
+
+// function check_liked_song(){
+//   if (! (currentTrack.innerText == '' & currentArtist.innerText == '')){
+//   fetch(`/checkLikedSongs?songName=${currentTrack.innerText}&artist=${currentArtist.innerText}`, {
+//     method: 'GET'
+//   }).then(results => results.json()).then(data => console.log(data))}
+// }
+
+function checkArtistAndConcert() {
+  fetch(`/checkLikedSongs?songName=${currentTrack.innerText}&artist=${currentArtist.innerText.substring(4)}`, {
+        method: 'GET'
+      }).then(results => results.json()).then(data => console.log(data))
+}
+
 
 likeBtn.addEventListener("click", function () {
-  fetch('/likeSong', {
-    method :"POST",
+  {
+    // check stubhub API
+    let url = stubhubURL + removeSpaces(currentArtist.innerText)
+    console.log(url)
+    console.log("HERE")
+    fetch(url, {
     headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      song: currentTrack.innerText,
-      artist: currentArtist.innerText.substring(4),
-      show: true,
-      songId: songId.innerText
-    })
-  }).then(results => results.json())
+      Accept: "application/json",
+      Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
+      }
+    }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
+    // like the song in DB
+    fetch('/likeSong', {
+      method :"POST",
+      headers: {
+        'Content-Type': 'application/json',
+        "Accept" :"application/json"
+      },
+      body: JSON.stringify({
+        song: currentTrack.innerText,
+        artist: currentArtist.innerText.substring(4),
+        show: true,
+        songId: songId.innerText
+      })
+    }).then(results => results.json()).then(data => console.log(data))
+  }
 })
 
 
@@ -41,26 +76,10 @@ volumeSlider.oninput = function() {
 }
 
 function removeSpaces (word) {
-  return word.toString().replace(/\s/g,"%20")
-}
-
-// Check Stub Hub api to see all concerts from the artist
-const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerName='
-
-function stubhubApiRequest (artist) {
-  let url = stubhubURL + removeSpaces(artist)
-  fetch(url, {
-  headers: {
-    Accept: "application/json",
-    Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
-  }
-  // ADD MAPING FUNCTION
-}).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
+  return word.toString().substring(4).replace(/\s/g,"%20")
 }
 
 
-
-// get location coords of user
 
 // Calculate distance from Location
 function distance(lat1, lon1, lat2, lon2, unit) {
@@ -81,10 +100,17 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 		dist = dist * 60 * 1.1515;
 		if (unit=="K") { dist = dist * 1.609344 }
     if (unit=="N") { dist = dist * 0.8684 }
+    console.log("CHEKING LIKED SONGS")
+    // check_liked_song()
     if (dist < searchRadius) {
-      // MAKE THIS LOOK BETTER THAN AN ALERT
-      alert("There is a concert in your area")
+      artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
+      document.body.classList.add('active')
     }
+    else {
+      artistNotification.innerText = `${currentArtist.innerText.substring(4)} has a concert coming up in your area`
+      document.body.classList.add('active')
+    }
+
 		return dist;
 	}
 }
@@ -100,13 +126,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
   
     // Error handling
-    player.addListener('initialization_error', ({ message }) => { console.error(message); });
-    player.addListener('authentication_error', ({ message }) => { console.error(message); });
-    player.addListener('account_error', ({ message }) => { console.error(message); });
-    player.addListener('playback_error', ({ message }) => { console.error(message); });
+    // player.addListener('initialization_error', ({ message }) => { console.error(message); });
+    // player.addListener('authentication_error', ({ message }) => { console.error(message); });
+    // player.addListener('account_error', ({ message }) => { console.error(message); });
+    // player.addListener('playback_error', ({ message }) => { console.error(message); });
   
-    // Playback status updates
-    player.addListener('player_state_changed', state => { console.log(state); });
+    // // Playback status updates
+    // player.addListener('player_state_changed', state => { console.log(state); });
   
     // Ready
     player.addListener('ready', ({ device_id }) => {
@@ -148,7 +174,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       currentAlbumCover.src = current_track["album"]["images"][0]["url"]
       currentArtist.innerText = "By: " + current_track["artists"][0]["name"]
       songId.innerText = current_track["id"]
-      stubhubApiRequest(current_track["artists"][0]["name"])
+      // stubhubApiRequest(current_track["artists"][0]["name"])
       // console.log('Currently Playing', current_track);
       // console.log('Position in Song', position);
       // console.log('Duration of Song', duration);
@@ -170,9 +196,3 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
   };
 
-
-// function pause(){
-//   player.pause().then(() => {
-//     console.log('Paused!');
-//   });
-// }
