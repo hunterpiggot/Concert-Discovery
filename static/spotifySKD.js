@@ -27,18 +27,26 @@ const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerNa
 
 // when artist changes, check if the user has like them and the concert has not been show, if true, check if the artist has a concert coming up, if they do, show them the concert
 
-// function check_liked_song(){
-//   if (! (currentTrack.innerText == '' & currentArtist.innerText == '')){
-//   fetch(`/checkLikedSongs?songName=${currentTrack.innerText}&artist=${currentArtist.innerText}`, {
-//     method: 'GET'
-//   }).then(results => results.json()).then(data => console.log(data))}
-// }
-
-function checkArtistAndConcert() {
+setInterval( function() { 
   fetch(`/checkLikedSongs?songName=${currentTrack.innerText}&artist=${currentArtist.innerText.substring(4)}`, {
         method: 'GET'
-      }).then(results => results.json()).then(data => console.log(data))
-}
+      }).then(results => results.json()).then((data) => {
+        if (data["ShowConcert"] == true){
+          let url = stubhubURL + removeSpaces(currentArtist.innerText)
+          console.log(url)
+          console.log("HERE")
+          fetch(url, {
+          headers: {
+          Accept: "application/json",
+          Authorization: AuthorizationKey.back
+            }
+          }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
+          // artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
+          // document.body.classList.add('active')
+        }
+      })
+}, 20000)
+
 
 
 likeBtn.addEventListener("click", function () {
@@ -50,7 +58,7 @@ likeBtn.addEventListener("click", function () {
     fetch(url, {
     headers: {
       Accept: "application/json",
-      Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
+      Authorization: AuthorizationKey.back
       }
     }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
     // like the song in DB
@@ -106,11 +114,6 @@ function distance(lat1, lon1, lat2, lon2, unit) {
       artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
       document.body.classList.add('active')
     }
-    else {
-      artistNotification.innerText = `${currentArtist.innerText.substring(4)} has a concert coming up in your area`
-      document.body.classList.add('active')
-    }
-
 		return dist;
 	}
 }
@@ -174,6 +177,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       currentAlbumCover.src = current_track["album"]["images"][0]["url"]
       currentArtist.innerText = "By: " + current_track["artists"][0]["name"]
       songId.innerText = current_track["id"]
+      localStorage.setItem("currentArtist", current_track["artists"][0]["name"])
+
       // stubhubApiRequest(current_track["artists"][0]["name"])
       // console.log('Currently Playing', current_track);
       // console.log('Position in Song', position);

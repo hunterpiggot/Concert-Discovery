@@ -16,6 +16,8 @@ from forms import UserForm, LoginForm
 
 import requests
 
+import config
+
 
 app = Flask(__name__)
 app.debug = True
@@ -165,7 +167,7 @@ def like_song():
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": "Bearer BQDNgbr61-zxUxVfrSzb413Wge3uBUQPDxrYa2aKKW3IfG88yujhg_xefOfC0CtV3dZZnUhd4p1_bCcO5wUGwLpjBav8FG5rTtjJFaVLHupXbebnhoCt25BL5ASleG5o5yZwgC5keen2oK04LXmpAdGbrOQbO3JV46_xBZNwO8SI1w",
+            "Authorization": Authorization,
         }
 
         params = (
@@ -208,27 +210,27 @@ def users_liked_songs():
     return render_template("users_liked_songs.html", user_and_concert=user_and_concert)
 
 
+def update_concert_to_liked(user, data):
+    for song in user:
+        if data["artist"].lower() == song.artist_name.lower():
+            song.shown_concert = True
+            db.session.commit()
+
+
 @app.route("/checkLikedSongs", methods=["GET"])
 def check_liked_songs():
     data = request.args
     user = LikedSongs.query.filter_by(email=session["email"]).all()
-    # user = LikedSongs.query.filter_by(song_name="Juice").all()
-    print(data["songName"].lower())
-    # print(user[0].lower())
-    print(data["songName"].lower() == user[0].lower())
     for song in user:
         if (
             data["songName"].lower() == song.song_name.lower()
             and data["artist"].lower() == song.artist_name.lower()
             and song.liked == True
+            and song.shown_concert == False
         ):
-            print("______________")
-            print("______________")
-            print("HERE")
-            print("______________")
-            print("______________")
-            data = {"liked": False}
+            update_concert_to_liked(user, data)
+            song.shown_concert = True
+            db.session.commit()
+            data = {"ShowConcert": True}
             return data
-            # res = {"Test": "testing"}
-            # return res
-    return {"liked": True}
+    return {"ShowConcert": False}
