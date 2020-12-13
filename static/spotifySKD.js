@@ -38,7 +38,7 @@ setInterval( function() {
           fetch(url, {
           headers: {
           Accept: "application/json",
-          Authorization: AuthorizationKey.back
+          Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
             }
           }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
           // artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
@@ -58,7 +58,7 @@ likeBtn.addEventListener("click", function () {
     fetch(url, {
     headers: {
       Accept: "application/json",
-      Authorization: AuthorizationKey.back
+      Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
       }
     }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
     // like the song in DB
@@ -77,6 +77,23 @@ likeBtn.addEventListener("click", function () {
     }).then(results => results.json()).then(data => console.log(data))
   }
 })
+
+dislikeBtn.addEventListener("click", function () {
+  fetch('/dislikeSong', {
+    method :"POST",
+    headers: {
+      'Content-Type': 'application/json',
+      "Accept" :"application/json"
+    },
+    body: JSON.stringify({
+      song: currentTrack.innerText,
+      artist: currentArtist.innerText.substring(4),
+      show: true,
+      songId: songId.innerText
+    })
+  }).then(results => results.json()).then(data => console.log(data))
+}
+)
 
 
 volumeSlider.oninput = function() {

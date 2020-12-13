@@ -16,7 +16,7 @@ from forms import UserForm, LoginForm
 
 import requests
 
-import config
+from config import *
 
 
 app = Flask(__name__)
@@ -109,6 +109,11 @@ def logout():
 
 @app.route("/music/<auth_code>")
 def music_page(auth_code):
+    # if not auth_code:
+    #     if "email" not in session:
+    #         flash("Please Log in", "danger")
+    #         return redirect("/register")
+    #     else:
     user = UserInformation.query.filter_by(email=session["email"]).first()
     lat = user.latitude
     lng = user.longitude
@@ -140,6 +145,7 @@ def authorize():
             "https://accounts.spotify.com/api/token", headers=headers, data=data
         )
         auth_code = response.json()["access_token"]
+        session["refreshToken"] = response.json()["refresh_token"]
         if auth_code:
             return redirect(url_for("music_page", auth_code=auth_code))
 
@@ -183,6 +189,32 @@ def like_song():
         data = {"success": True}
         return data
     data = {"success": False}
+    return data
+
+
+@app.route("/dislikeSong", methods=["GET", "POST"])
+def dislike_song():
+    data = request.json
+    user = LikedSongs.query.filter_by(email=session["email"]).all()
+    duplicate = False
+    for song in user:
+        if data["song"] == song.song_name and data["artist"] == song.artist_name:
+            song.liked = False
+            db.session.commit()
+            duplicate = True
+    if not duplicate:
+        song = LikedSongs(
+            email=session["email"],
+            song_name=data["song"],
+            artist_name=data["artist"],
+            liked=False,
+            shown_concert=False,
+        )
+        db.session.add(song)
+        db.session.commit()
+        data = {"success": True}
+        return data
+    data = {"success": True}
     return data
 
 
