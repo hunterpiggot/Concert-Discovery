@@ -1,7 +1,9 @@
 {% extends 'index.html'  %}
 {% block content %}
 
-{% for song in user_and_concert %}
-<li>{{song[0].song_name}} By {{song[0].artist_name}} ------ {{song[1]}}</li>
-{% endfor%}
+{% for song in user %}
+<li>{{song.song_name}} By {{song.artist_name}}</li>
+{% endfor %}
+<!-- <p>{{user}}</p> -->
+
 {% endblock %}
