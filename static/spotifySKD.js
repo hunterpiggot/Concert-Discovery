@@ -1,26 +1,30 @@
 const playButton = document.getElementById("playButton")
-const volumeSlider = document.getElementById("volume-slider")
-const volumeDisplay = document.getElementById("volume-display")
-volumeDisplay.innerHTML = volumeSlider.value
+const pauseButton = document.getElementById("pauseButton")
+// const volumeSlider = document.getElementById("volume-slider")
+// const volumeDisplay = document.getElementById("volume-display" )
+// volumeDisplay.innerHTML = volumeSlider.value
 
-const currentTrack = document.getElementById("current-track")
-const currentAlbumCover = document.getElementById("album-cover")
-const currentArtist = document.getElementById("current-artist")
-const lastSong = document.getElementById("previous-track")
-const nextSong = document.getElementById("next-track")
+const currentTrack = document.getElementById("current-track") /////////////
+const currentAlbumCover = document.getElementById("album-cover") ////////////
+const currentArtist = document.getElementById("current-artist") ///////////
+const lastSong = document.getElementById("previous-track") ////////////////
+const nextSong = document.getElementById("next-track") /////////////
 
-const authCode = document.getElementById("auth-code").innerText
+const authCode = document.getElementById("auth-code").innerText ////////////////
 
-const lat = document.getElementById('latitude').innerText
-const lng = document.getElementById('longitude').innerText
-const searchRadius = document.getElementById("serachRadius").innerText
+const lat = document.getElementById('latitude').innerText /////////////////
+const lng = document.getElementById('longitude').innerText /////////////////
+const searchRadius = document.getElementById("serachRadius").innerText //////////////////////
 
-const likeBtn = document.getElementById("likeSong")
+const likeBtn = document.getElementById("likeSong") //////////////////
+////////////////////////// ADD DISLIKE SONG \\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const dislikeBtn = document.getElementById("dislikeSong")
-const songId = document.getElementById("song-id")
 
-const notification = document.getElementById("concert-notification")
-const artistNotification = document.getElementById("artist-notification")
+const songId = document.getElementById("song-id") ////////////////////////////////////
+
+//////////////////////////// MIGHT NOT WORK \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+const notification = document.getElementById("concert-notification") ///////////////////
+const artistNotification = document.getElementById("artist-notification") //////////////
 
 
 const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerName='
@@ -34,7 +38,6 @@ setInterval( function() {
         if (data["ShowConcert"] == true){
           let url = stubhubURL + removeSpaces(currentArtist.innerText)
           console.log(url)
-          console.log("HERE")
           fetch(url, {
           headers: {
           Accept: "application/json",
@@ -45,7 +48,7 @@ setInterval( function() {
           // document.body.classList.add('active')
         }
       })
-}, 20000)
+}, 50*60*1000)
 
 
 
@@ -54,13 +57,13 @@ likeBtn.addEventListener("click", function () {
     // check stubhub API
     let url = stubhubURL + removeSpaces(currentArtist.innerText)
     console.log(url)
-    console.log("HERE")
     fetch(url, {
     headers: {
       Accept: "application/json",
       Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
       }
     }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
+    // data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude']))
     // like the song in DB
     fetch('/likeSong', {
       method :"POST",
@@ -78,27 +81,27 @@ likeBtn.addEventListener("click", function () {
   }
 })
 
-dislikeBtn.addEventListener("click", function () {
-  fetch('/dislikeSong', {
-    method :"POST",
-    headers: {
-      'Content-Type': 'application/json',
-      "Accept" :"application/json"
-    },
-    body: JSON.stringify({
-      song: currentTrack.innerText,
-      artist: currentArtist.innerText.substring(4),
-      show: true,
-      songId: songId.innerText
-    })
-  }).then(results => results.json()).then(data => console.log(data))
-}
-)
+// dislikeBtn.addEventListener("click", function () {
+//   fetch('/dislikeSong', {
+//     method :"POST",
+//     headers: {
+//       'Content-Type': 'application/json',
+//       "Accept" :"application/json"
+//     },
+//     body: JSON.stringify({
+//       song: currentTrack.innerText,
+//       artist: currentArtist.innerText.substring(4),
+//       show: true,
+//       songId: songId.innerText
+//     })
+//   }).then(results => results.json()).then(data => console.log(data))
+// }
+// )
 
 
-volumeSlider.oninput = function() {
-  volumeDisplay.innerHTML = this.value
-}
+// volumeSlider.oninput = function() {
+//   volumeDisplay.innerHTML = this.value
+// }
 
 function removeSpaces (word) {
   return word.toString().substring(4).replace(/\s/g,"%20")
@@ -125,7 +128,6 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 		dist = dist * 60 * 1.1515;
 		if (unit=="K") { dist = dist * 1.609344 }
     if (unit=="N") { dist = dist * 0.8684 }
-    console.log("CHEKING LIKED SONGS")
     // check_liked_song()
     if (dist < searchRadius) {
       artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
@@ -136,14 +138,13 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 }
 
 
-
-
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = authCode;
     const player = new Spotify.Player({
       name: 'Concert Discovery',
       getOAuthToken: cb => { cb(token); },
     });
+
   
     // Error handling
     // player.addListener('initialization_error', ({ message }) => { console.error(message); });
@@ -156,12 +157,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   
     // Ready
     player.addListener('ready', ({ device_id }) => {
-      // console.log('Ready with Device ID', device_id);
     });
   
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
-      // console.log('Device ID has gone offline', device_id);
     });
 
     player.setVolume(0.5).then(() => {
@@ -173,17 +172,24 @@ window.onSpotifyWebPlaybackSDKReady = () => {
       // console.log(`The volume of the player is ${volume_percentage}%`);
     });
     
+    pauseButton.addEventListener("click", function(){
+      player.pause().then(() => {
+
+        // console.log('Toggled playback!');
+      });
+    })
     playButton.addEventListener("click", function(){
-      player.togglePlay().then(() => {
+      player.resume().then(() => {
+
         // console.log('Toggled playback!');
       });
     })
 
-    volumeSlider.addEventListener("mousemove", function() {
-      player.setVolume(this.value/100).then(() => {
-        // console.log('Volume updated!');
-      });
-    })
+    // volumeSlider.addEventListener("mousemove", function() {
+    //   player.setVolume(this.value/100).then(() => {
+    //     // console.log('Volume updated!');
+    //   });
+    // })
 
     player.addListener('player_state_changed', ({
       position,

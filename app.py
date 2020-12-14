@@ -55,7 +55,6 @@ def register():
         #     form.email.errors.append("Email is taken, please provide another")
         #     return render_template("register.html", form=form)
         session["email"] = new_user.email
-        # flash("Thank you for joining!")
         return redirect(url_for("get_lat_long", email=email))
     return render_template("register.html", form=form)
 
@@ -109,17 +108,12 @@ def logout():
 
 @app.route("/music/<auth_code>")
 def music_page(auth_code):
-    # if not auth_code:
-    #     if "email" not in session:
-    #         flash("Please Log in", "danger")
-    #         return redirect("/register")
-    #     else:
     user = UserInformation.query.filter_by(email=session["email"]).first()
     lat = user.latitude
     lng = user.longitude
     searchRadius = user.search_radius
     return render_template(
-        "musicPage.html",
+        "testMusicPage.html",
         auth_code=auth_code,
         lat=lat,
         lng=lng,
@@ -221,29 +215,6 @@ def dislike_song():
 @app.route("/likedSongs")
 def users_liked_songs():
     user = LikedSongs.query.filter_by(email=session["email"]).all()
-    print("______________________")
-    print("______________________")
-    print(user)
-    print("______________________")
-    print("______________________")
-    # user_and_concert = []
-    # for song in user:
-    #     headers = {
-    #         "Authorization": "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg",
-    #         "Accept": "application/json",
-    #     }
-    #     params = (("performerName", song.artist_name),)
-    #     response = requests.get(
-    #         "https://api.stubhub.com/sellers/search/events/v3",
-    #         headers=headers,
-    #         params=params,
-    #     )
-    #     if response.json()["numFound"] > 0:
-    #         user_and_concert.append([song, response.json()["events"][0]["name"]])
-    #     else:
-    #         user_and_concert.append(
-    #             [song, "There is no upcoming concerts for the artist"]
-    #         )
     return render_template("users_liked_songs.html", user=user)
 
 
