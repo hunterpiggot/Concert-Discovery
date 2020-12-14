@@ -44,18 +44,18 @@ setInterval( function() {
       }).then(results => results.json()).then((data) => {
         if (data["ShowConcert"] == true){
           let url = stubhubURL + removeSpaces(currentArtist.innerText)
-          console.log(url)
+          // console.log(url)
           fetch(url, {
           headers: {
           Accept: "application/json",
-          Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
+          Authorization: AuthorizationKey
             }
           }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
           // artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
           // document.body.classList.add('active')
         }
       })
-}, 50*60*1000)
+}, 60*1000)
 
 
 
@@ -67,7 +67,7 @@ likeBtn.addEventListener("click", function () {
     fetch(url, {
     headers: {
       Accept: "application/json",
-      Authorization: "Bearer rbSWVTH2iRdcTn5zIe8ifEfGlwCg"
+      Authorization: AuthorizationKey
       }
     }).then(response => response.json()).then(data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude'])))
     // data => data['events'].map(x => distance(lat,lng,x['venue']['latitude'],x['venue']['longitude']))
@@ -140,11 +140,11 @@ function distance(lat1, lon1, lat2, lon2, unit) {
       artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
       document.body.classList.add('active')
     }
-    if (dist > searchRadius) {
-      console.log("HERE")
-      artistNotification.innerText = `${removeSpaces(currentArtist.innerText)} has a concert coming up in your area`
-      document.body.classList.add('active')
-    }
+    // if (dist > searchRadius) {
+    //   console.log("HERE")
+    //   artistNotification.innerText = `${removeSpaces(currentArtist.innerText)} has a concert coming up in your area`
+    //   document.body.classList.add('active')
+    // }
 		return dist;
 	}
 }

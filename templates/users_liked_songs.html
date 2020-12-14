@@ -1,8 +1,11 @@
 {% extends 'index.html'  %}
 {% block content %}
 
+<h1 id="liked-songs-h1">Liked Songs:</h1>
+
 {% for song in user %}
-<li>{{song.song_name}} By {{song.artist_name}}</li>
+<li class="liked-songs-li">{{song.song_name}} By {{song.artist_name}}</li>
 {% endfor %}
+
 
 {% endblock %}

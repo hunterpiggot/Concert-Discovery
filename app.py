@@ -236,9 +236,19 @@ def check_liked_songs():
             and song.liked == True
             and song.shown_concert == False
         ):
+            print("________________________")
+            print("________________________")
+            print("Made past if statment")
+            print("________________________")
+            print("________________________")
             update_concert_to_liked(user, data)
             song.shown_concert = True
             db.session.commit()
             data = {"ShowConcert": True}
             return data
+    print("#########################")
+    print("#########################")
+    print("Did NOT make it past if statment")
+    print("#########################")
+    print("#########################")
     return {"ShowConcert": False}
