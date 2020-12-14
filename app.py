@@ -20,13 +20,13 @@ from config import *
 
 
 app = Flask(__name__)
-app.debug = True
+# app.debug = True
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///concertdiscovery"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "12345"
-toolbar = DebugToolbarExtension(app)
-if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+# toolbar = DebugToolbarExtension(app)
+# if __name__ == "__main__":
+#     app.run(debug=True, use_reloader=False)
 
 
 connect_db(app)
@@ -69,7 +69,9 @@ def get_lat_long(email):
     city = user.city
     state = user.state
     url = (
-        "http://open.mapquestapi.com/geocoding/v1/address?key=TjM9QJlI2AYMCCkqtzSTVmVW73ZzYwaL&location="
+        "http://open.mapquestapi.com/geocoding/v1/address?key="
+        + Key
+        + "&location="
         + remove_space(city)
         + ","
         + state
@@ -126,7 +128,7 @@ def authorize():
     code = request.args.get("code")
     if request.method == "GET":
         headers = {
-            "Authorization": "Basic ODlmZmQ1MTQ1NWZhNDExM2IxYzNhYjU4NDk2YzA5NzA6MmI1ZDYzYmY4YjhiNDVkN2JmN2Y1OTk4OGIzYTlkMWI=",
+            "Authorization": Authorize_Token,
         }
 
         data = {
@@ -236,19 +238,9 @@ def check_liked_songs():
             and song.liked == True
             and song.shown_concert == False
         ):
-            print("________________________")
-            print("________________________")
-            print("Made past if statment")
-            print("________________________")
-            print("________________________")
             update_concert_to_liked(user, data)
             song.shown_concert = True
             db.session.commit()
             data = {"ShowConcert": True}
             return data
-    print("#########################")
-    print("#########################")
-    print("Did NOT make it past if statment")
-    print("#########################")
-    print("#########################")
     return {"ShowConcert": False}
