@@ -62,7 +62,7 @@ html {
     font-size: 12px;
   }
   
-  .login-box form a {
+  .login-box a {
     position: relative;
     display: inline-block;
     padding: 10px 20px;
@@ -185,4 +185,24 @@ select {
 
 .login {
     margin-left: 25px;
+}
+
+.connect {
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.connect-button {
+    margin-top: 0;
+    left: 86px;
+    padding: 0px;
+}
+
+#connect-script {
+    margin-top: 100px;
+    margin-left: 50px;
+    margin-right: 50px;
+    text-align: center;
+    font-size: 2rem;
 }
