@@ -60,10 +60,11 @@ p:last-of-type{
 
 .notification-wrapper{
     position: absolute;
-    left: 50%;
-    top: 50%;
-    /* width: 100%;
-    height: 100%; */
+    margin: auto;
+    /* left: 35%;
+    top: 50%; */
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -269,7 +270,7 @@ p:last-of-type{
 
 .content{
     --offset: 0;
-    position: absolute;
+    position: relative;
     left: var(--offset);
     right: var(--offset);
     bottom: var(--offset);
@@ -279,32 +280,59 @@ p:last-of-type{
     justify-content: center;
     opacity: 0;
     transition: all 0.35s ease 0.75s;
-    z-index: 10;
+    z-index: 20;
 }
 
 .content-wrapper{
+    height: 400px;
+    /* margin-top: 200px; */
     text-align: center;
+    z-index: 20;
+
 }
 
 body.active .content{
     opacity: 1;
     transform: none;
+    z-index: 20;
+
 }
 
 body.active .popup{
     opacity: 1;
     visibility: visible;
+    z-index: 20;
+
 }
 
 body.active .popup-inside{
     border-radius: 0;
     box-shadow: -50px 0 200px -50px #504bff, 50px 0 200px -50px #4cfa63;
+    z-index: 20;
+
 }
 
 body.active .background{
     transform: scale(1);
+    z-index: 20;
+
 }
 
 body.active .background6{
     transform: scale(8);
+    z-index: 20;
+
+}
+
+#artist-notification {
+    margin-top:75px;
+    margin-bottom: 60px;
+}
+
+#concert-link {
+    margin-bottom: 20px;
+}
+
+#buy-tickets {
+    margin-bottom: 20px;
 }

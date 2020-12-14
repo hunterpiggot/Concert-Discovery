@@ -87,11 +87,6 @@ def get_lat_long(email):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    print("______________________")
-    print("______________________")
-    print(form)
-    print("______________________")
-    print("______________________")
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data

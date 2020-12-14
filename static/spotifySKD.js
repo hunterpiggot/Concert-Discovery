@@ -25,11 +25,18 @@ const songId = document.getElementById("song-id") //////////////////////////////
 //////////////////////////// MIGHT NOT WORK \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const notification = document.getElementById("concert-notification") ///////////////////
 const artistNotification = document.getElementById("artist-notification") //////////////
-
+const notificationContainer = document.getElementsByClassName("notification-container")
 
 const stubhubURL = 'https://api.stubhub.com/sellers/search/events/v3?performerName='
 
 // when artist changes, check if the user has like them and the concert has not been show, if true, check if the artist has a concert coming up, if they do, show them the concert
+
+function notify () {
+  console.log("HERE")
+  notificationContainer.classList.add("active")
+}
+
+
 
 setInterval( function() { 
   fetch(`/checkLikedSongs?songName=${currentTrack.innerText}&artist=${currentArtist.innerText.substring(4)}`, {
@@ -131,6 +138,11 @@ function distance(lat1, lon1, lat2, lon2, unit) {
     // check_liked_song()
     if (dist < searchRadius) {
       artistNotification.innerText = `${currentArtist.innerText} has a concert coming up in your area`
+      document.body.classList.add('active')
+    }
+    if (dist > searchRadius) {
+      console.log("HERE")
+      artistNotification.innerText = `${removeSpaces(currentArtist.innerText)} has a concert coming up in your area`
       document.body.classList.add('active')
     }
 		return dist;
